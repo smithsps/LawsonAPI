@@ -12,11 +12,26 @@ def lab_list(name, max):
 
 #Generate computer names to visit
 names = list()
-names.extend(lab_list('moore', 24))
-names.extend(lab_list('sac', 12))
-names.extend(lab_list('sslab', 24))
+c = []
+#Lawson
+c.extend(("SAC%02d" % i, "LWSN B131")   for i in range(1,14)) #SAC LAB
+c.extend(("MOORE%02d" % i, "LWSN B146") for i in range(0,25)) #MOORE LAB
+c.extend(("SSLAB%02d" % i, "LWSN B158") for i in range(0,25)) #SSLAB LAB
 
-names.append('pod4-4')
+#POD Lab
+c.append(("POD0-0", "LWSN B148"))
+#c.extend(("POD1-%d" % i, "LWSN B148") for i in range(1,6))
+#c.extend(("POD2-%d" % i, "LWSN B148") for i in range(1,6))
+#c.extend(("POD3-%d" % i, "LWSN B148") for i in range(1,6))
+#c.extend(("POD4-%d" % i, "LWSN B148") for i in range(1,6))
+#c.extend(("POD5-%d" % i, "LWSN B148") for i in range(1,6))
+
+#HAAS
+c.extend(("BORG%02d" % i, "HAAS G40") for i in range(0,25)) #BORG LAB
+c.extend(("XINU%02d" % i, "HAAS 257") for i in range(0,22)) #Xinu Lab
+
+
+names = [str(i[0]) for i in c]
 
 
 
