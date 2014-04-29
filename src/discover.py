@@ -8,9 +8,6 @@ import discover_users
 
 DB_NAME = "discover.db"
 
-#http://stackoverflow.com/questions/18064149/
-#For google calendar
-
 #Builds the a new sqlite3 database, if missing.
 def build_db():
 		if (not os.path.isfile(DB_NAME)):
@@ -65,7 +62,7 @@ def test():
 	
 	connection = sqlite.connect(DB_NAME)
 	c = connection.cursor()
-	c.execute("SELECT * FROM users WHERE username='smithsp'")
+	c.execute("SELECT * FROM computers WHERE username='smithsp'")
 	print c.fetchone()[1]
 
 
