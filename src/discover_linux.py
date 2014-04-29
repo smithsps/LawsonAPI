@@ -29,8 +29,7 @@ def get_computers():
 
 #Starts who command on remote host
 def start_subprocess(host):
-  ssh = subprocess.Popen(['ssh', '%s' % host, 'who'], shell=False, 		
-  												stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  ssh = subprocess.Popen(['ssh', '%s' % host, 'who'], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   return ssh
 	
 
