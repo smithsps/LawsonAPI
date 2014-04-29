@@ -1,28 +1,56 @@
 import subprocess
 import sqlite3 as sqlite
+import time
 
-MAX_PROCESSES = 20 #Too many is a big preformance burden on the computer.
+MAX_PROCESSES = 30 #Too many is a big preformance burden on the computer.
+PROCESS_TIMEOUT = 15 #Timeout for checking computer if unreachable
+
+#Instead of using a complex tuple list, we'll just use an object list
+class Computer(object):
+	name = ""
+	lab = ""
+	room = ""
+	inuse = False
+	loggedIn = False
+	username = ""
+	
+	process = None
+	processTime = None
+	
+	def __init__(self, name, lab, room):
+		self.name = name
+		self.lab = lab
+		self.room = room
+	
+	#Instead of calling many python generators we have this nice thing
+	@staticmethod
+	def many(lab, number, room, lower, upper):
+		return (Computer(lab + number % i, lab, room) for i in range(lower, upper + 1))
+		
+	def __str__(self):
+		return name + " : " + lab + " : " + room + " : " + inuse
+
 
 #Creates a list of all CS linux computers, tupled with their room
-computers = []
+computer_names = []
 def get_computers():
 	c = []
 	#Lawson
-	c.extend(("SAC%02d" % i, "SAC", "LWSN B131")   for i in range(1,14)) 
-	c.extend(("MOORE%02d" % i, "MOORE", "LWSN B146") for i in range(0,25))
-	c.extend(("SSLAB%02d" % i, "SSLAB", "LWSN B158") for i in range(0,25)) 
+	c.extend(Computer.many("SAC", "%02d", "LWSN B131", 1, 13))
+	c.extend(Computer.many("MOORE", "%02d", "LWSN B146", 0, 24))
+	c.extend(Computer.many("SSLAB", "%02d", "LWSN B158", 0, 24))
 	
 	#POD Lab
-	c.append(("POD0-0", "POD", "LWSN B148"))
-	c.extend(("POD1-%d" % i, "POD", "LWSN B148") for i in range(1,6))
-	c.extend(("POD2-%d" % i, "POD", "LWSN B148") for i in range(1,6))
-	c.extend(("POD3-%d" % i, "POD", "LWSN B148") for i in range(1,6))
-	c.extend(("POD4-%d" % i, "POD", "LWSN B148") for i in range(1,6))
-	c.extend(("POD5-%d" % i, "POD", "LWSN B148") for i in range(1,6))
+	c.append(Computer("POD0-0", "POD", "LWSN B148"))
+	c.extend(Computer.many("POD", "1-%d", "LWSN B148", 1, 5))
+	c.extend(Computer.many("POD", "2-%d", "LWSN B148", 1, 5))
+	c.extend(Computer.many("POD", "3-%d", "LWSN B148", 1, 5))
+	c.extend(Computer.many("POD", "4-%d", "LWSN B148", 1, 5))
+	c.extend(Computer.many("POD", "5-%d", "LWSN B148", 1, 5))
 	
 	#HAAS
-	c.extend(("BORG%02d" % i, "BORG", "HAAS G40") for i in range(0,25))
-	c.extend(("XINU%02d" % i, "XINU", "HAAS 257") for i in range(0,22))
+	c.extend(Computer.many("BORG", "%02d", "HAAS G40", 0, 24))
+	c.extend(Computer.many("XINU", "%02d", "HAAS 257", 0, 21))
 	
 	#MC01-MC18 are servers
 	return c
@@ -34,47 +62,54 @@ def start_subprocess(host):
 	
 
 def build():
-	notComplete = list(computers);
+	notStarted = computer_names;
 	processes = []
+	failed = []
 	completed = []
 	
 	#Spawn and track processes
-	while notComplete or processes:
-		while len(processes) < MAX_PROCESSES and len(notComplete) > 0:
-			c = notComplete.pop()
-			processes.append((c, start_subprocess(c[0])))
+	while notStarted or processes:
+		while len(processes) < MAX_PROCESSES and len(notStarted) > 0:
+			c = notStarted.pop()
+			c.process = start_subprocess(c.name)
+			c.processTime = time.time()
+			processes.append(c)
 		
-		for p in processes:
-			if(p[1].poll() is not None):
-				completed.append(p)
-				processes.remove(p)
+		print len(processes)
+		
+		#Check if current processes are finished
+		for c in processes:
+			if(c.process.poll() is not None):
+				completed.append(c)
+				processes.remove(c)
+			elif (time.time() - c.processTime) > PROCESS_TIMEOUT:
+				failed.append(c)
+				processes.remove(c)
+				
+		time.sleep(0.1)
 
   
-  #Build list
+  #Build sql list for query
 	lookup = []
-	for p in completed:
-		out = p[1].stdout.readlines()
+	for c in completed:
+		out = c.process.stdout.readlines()
 		
-		logged = False
-		inuse = False
 		for line in out:
 			split = line.split()
-			#comp name: p[0][0]
-			#room			: p[0][1]
 			#username : split[0]
 			#tty 			: split[1] 
 			
-			logged = True
-			inuse = "tty" in split[1]
-			username = split[0]
-			if inuse:
-				#Otherwise, list order may have false positives on emptiness
+			c.logged = True
+			c.inuse = "tty" in split[1]
+			if c.inuse: 
+				c.username = split[0]
 				break
 		
-		#Were trying to avoid adding usernames to remoted in users
-		lookup.append(( p[0][0], p[0][1], p[0][2], 
-						int(inuse), username if inuse else ''))	
-						
+		lookup.append(( c.name, c.lab, c.room, int(c.inuse), c.username))
+	
+	#Perhaps a status for the computer later.
+	for c in failed:
+		lookup.append(( c.name, c.lab, c.room, int(True), ""))
 	
 	return lookup
 		
@@ -90,4 +125,4 @@ def execute(db_name):
 	connection.commit()
 	connection.close()
 
-computers = get_computers()
+computer_names = get_computers()
