@@ -16,6 +16,7 @@ class Computer(object):
 	
 	process = None
 	processTime = None
+	failed = False
 	
 	def __init__(self, name, lab, room):
 		self.name = name
@@ -75,7 +76,7 @@ def build():
 			c.processTime = time.time()
 			processes.append(c)
 		
-		print len(processes)
+		#print len(processes)
 		
 		#Check if current processes are finished
 		for c in processes:
@@ -83,8 +84,10 @@ def build():
 				completed.append(c)
 				processes.remove(c)
 			elif (time.time() - c.processTime) > PROCESS_TIMEOUT:
+				c.failed = True
 				failed.append(c)
 				processes.remove(c)
+
 				
 		time.sleep(0.1)
 
@@ -107,7 +110,7 @@ def build():
 		
 		lookup.append(( c.name, c.lab, c.room, int(c.inuse), c.username))
 	
-	#Perhaps a status for the computer later.
+	#Perhaps a status for the computer later. These computers are unreachable
 	for c in failed:
 		lookup.append(( c.name, c.lab, c.room, int(True), ""))
 	
