@@ -1,6 +1,7 @@
 import subprocess
+import sqlite3 as sqlite
 
-MAX_PROCESSES = 25 #Too many is a big preformance burden on the computer.
+MAX_PROCESSES = 20 #Too many is a big preformance burden on the computer.
 
 #Creates a list of all CS linux computers, tupled with their room
 computers = []
@@ -38,24 +39,25 @@ def build():
 	processes = []
 	completed = []
 	
+	#Spawn and track processes
 	while notComplete or processes:
 		while len(processes) < MAX_PROCESSES and len(notComplete) > 0:
 			c = notComplete.pop()
 			processes.append((c, start_subprocess(c[0])))
-		
-		print str(len(processes)) + ", " + str(len(completed)) + ", " + str(len(notComplete))
 		
 		for p in processes:
 			if(p[1].poll() is not None):
 				completed.append(p)
 				processes.remove(p)
 
-      	
-      	
-      	
+  
+  #Build list
 	lookup = []
 	for p in completed:
 		out = p[1].stdout.readlines()
+		
+		logged = False
+		inuse = False
 		for line in out:
 			split = line.split()
 			#comp name: p[0][0]
@@ -63,14 +65,30 @@ def build():
 			#username : split[0]
 			#tty 			: split[1] 
 			
+			logged = True
 			inuse = "tty" in split[1]
-			lookup.append(( p[0][0], p[0][1], p[0][2], int(inuse), split[0] ))
-					
-			
-	for s in lookup:
-		print s
-
+			username = split[0]
+			if inuse:
+				#Otherwise, list order may have false positives on emptiness
+				break
+		
+		#Were trying to avoid adding usernames to remoted in users
+		lookup.append(( p[0][0], p[0][1], p[0][2], 
+						int(inuse), username if inuse else ''))	
+						
+	
+	return lookup
+		
+	
 def execute(db_name):
-	build()
+	computer = build()
+	
+	connection = sqlite.connect(db_name)
+	c = connection.cursor()
+	
+	c.executemany("INSERT OR REPLACE INTO computers VALUES (?,?,?,?,?)", computer);
+	
+	connection.commit()
+	connection.close()
 
 computers = get_computers()

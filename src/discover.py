@@ -38,7 +38,7 @@ def print_db():
 	connection = sqlite.connect(DB_NAME)
 	c = connection.cursor()
 	print "Computers:"
-	for row in c.execute("SELECT * FROM computers"):
+	for row in c.execute("SELECT * FROM computers ORDER BY name"):
 		print row
 		
 	#print "\nUsernames:"
