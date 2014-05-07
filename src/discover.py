@@ -50,9 +50,9 @@ def print_db():
 	for row in c.execute("SELECT * FROM computers ORDER BY name"):
 		print row
 		
-	#print "\nUsernames:"
-	#for row in c.execute("SELECT * FROM users"):
-		#print row
+	print "\nUsernames:"
+	for row in c.execute("SELECT * FROM users ORDER BY name"):
+		print row
 		
 	print "\nLabs:"
 	for row in c.execute("SELECT * FROM labs"):
@@ -67,16 +67,16 @@ def test():
 	
 	connection = sqlite.connect(DB_NAME)
 	c = connection.cursor()
-	c.execute("SELECT * FROM computers WHERE user='msandy'")
+	c.execute("SELECT * FROM computers WHERE user='smithsp'")
 	print c.fetchone()
 
 #user = getpass.getuser() 
 #password = getpass.getpass("Enter password for " + user + " (USED FOR WINDOWS COMPUTERS):")
 
 build_db();
-#discover_users.execute(DB_NAME)
-#discover_linux.execute(DB_NAME)
+discover_users.execute(DB_NAME)
+discover_linux.execute(DB_NAME)
 #discover_windows.execute(DB_NAME, user, password)
 discover_labs.execute(DB_NAME);
 
-test();
+#test();

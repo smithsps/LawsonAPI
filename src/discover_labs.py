@@ -75,7 +75,6 @@ def build():
 			start = lab.eventStart["dateTime"].split("T")[1].split("-")[0]
 			end = lab.eventEnd["dateTime"].split("T")[1].split("-")[0]
 			lab.eventTime = start + " - " + end
-			print lab.eventTime
 			
 		lookup.append((lab.name, int(lab.event), lab.eventTime, lab.eventName, lab.status))
 	
