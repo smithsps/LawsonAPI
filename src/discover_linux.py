@@ -58,17 +58,15 @@ def build():
 				completed.append(c)
 				processes.remove(c)
 			elif (time.time() - c.processTime) > PROCESS_TIMEOUT:
-				c.failed = True
+				c.error = True
 				failed.append(c)
 				processes.remove(c)
-
-				
-		time.sleep(0.1)
 
   
   #Build sql list for query
 	lookup = []
 	for c in completed:
+		c.os = "Linux"
 		out = c.process.stdout.readlines()
 		
 		for line in out:
@@ -76,17 +74,20 @@ def build():
 			#username : split[0]
 			#tty 			: split[1] 
 			
-			c.logged = True
+			c.loggedIn = True
+			c.error = False
 			c.inuse = "tty" in split[1]
 			if c.inuse: 
 				c.username = split[0]
 				break
+				
+		lookup.append((c.name, c.lab, c.room, c.os, int(c.inuse), int(c.error), c.username))
 		
-		lookup.append(( c.name, c.lab, c.room, int(c.inuse), c.username))
-	
-	#Perhaps a status for the computer later. These computers are unreachable
+		
 	for c in failed:
-		lookup.append(( c.name, c.lab, c.room, int(True), ""))
+		c.error = True
+		lookup.append((c.name, c.lab, c.room, c.os, int(c.inuse), int(c.error), c.username))
+		
 	
 	return lookup
 		
@@ -97,7 +98,7 @@ def execute(db_name):
 	connection = sqlite.connect(db_name)
 	c = connection.cursor()
 	
-	c.executemany("INSERT OR REPLACE INTO computers VALUES (?,?,?,?,?)", computer);
+	c.executemany("INSERT OR REPLACE INTO computers VALUES (?,?,?,?,?,?,?)", computer);
 	
 	connection.commit()
 	connection.close()

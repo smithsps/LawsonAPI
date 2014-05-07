@@ -2,6 +2,7 @@ import subprocess
 import sqlite3 as sqlite
 import logging
 import os.path
+import getpass
 import discover_linux
 import discover_windows
 import discover_users
@@ -11,6 +12,7 @@ DB_NAME = "discover.db"
 #Builds the a new sqlite3 database, if missing.
 def build_db():
 		if (not os.path.isfile(DB_NAME)):
+			print "Building new SQLite database."
 		  connection = sqlite.connect(DB_NAME)
 		  c = connection.cursor()
 		  
@@ -19,14 +21,23 @@ def build_db():
 		      				name TEXT PRIMARY KEY, 
 		      				lab TEXT,
 		      				room TEXT,
+		      				os TEXT,
 		      				useable INTEGER,
+		      				error INTEGER,
 		      				user TEXT)''')
 		  
 		  #username, name
 		  c.execute('''CREATE TABLE users (
 		      				username TEXT PRIMARY KEY,
 		      				name TEXT)''')
-		      
+		      				
+		  c.execute('''CREATE TABLE labs (
+		      				name TEXT PRIMARY KEY,
+		      				class INTEGER,
+		      				classTime TEXT,
+		      				className TEXT,
+		      				status TEXT)''')
+		      				
 		  connection.commit();
 		  connection.close();
 
@@ -48,7 +59,7 @@ def print_db():
 def test():
 	connection = sqlite.connect(DB_NAME)
 	c = connection.cursor()
-	c.execute("INSERT OR REPLACE INTO computers VALUES ('tst01', 'SAC', 'B134', 1, 'smithsp')")
+	c.execute("INSERT OR REPLACE INTO computers VALUES ('tst01', 'SAC', 'B134', 'BOSTON', 1, 1, 'smithsp')")
 	connection.commit()
 	connection.close()
 	
@@ -62,9 +73,11 @@ def test():
 	
 	connection = sqlite.connect(DB_NAME)
 	c = connection.cursor()
-	c.execute("SELECT * FROM computers WHERE username='smithsp'")
-	print c.fetchone()[1]
+	c.execute("SELECT * FROM computers WHERE user='smithsp'")
+	print c.fetchone()
 
+user = getpass.getuser() 
+password = getpass.getpass("Enter password for " + user + " (USED FOR WINDOWS COMPUTERS):")
 
 build_db();
 discover_users.execute(DB_NAME)

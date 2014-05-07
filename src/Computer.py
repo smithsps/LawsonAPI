@@ -2,13 +2,14 @@ class Computer(object):
 	name = ""
 	lab = ""
 	room = ""
+	os = ""
 	inuse = False
 	loggedIn = False
+	error = False
 	username = ""
 	
 	process = None
 	processTime = None
-	failed = False
 	
 	def __init__(self, name, lab, room):
 		self.name = name
