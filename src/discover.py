@@ -34,9 +34,9 @@ def build_db():
 								
 			c.execute('''CREATE TABLE labs (
 									name TEXT PRIMARY KEY,
-									class INTEGER,
-									classTime TEXT,
-									className TEXT,
+									event INTEGER,
+									eventTime TEXT,
+									eventName TEXT,
 									status TEXT)''')
 								
 			connection.commit();
