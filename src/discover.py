@@ -6,6 +6,7 @@ import getpass
 import discover_linux
 import discover_windows
 import discover_users
+import discover_labs
 
 DB_NAME = "discover.db"
 
@@ -69,8 +70,9 @@ def test():
 #password = getpass.getpass("Enter password for " + user + " (USED FOR WINDOWS COMPUTERS):")
 
 build_db();
-discover_users.execute(DB_NAME)
-discover_linux.execute(DB_NAME)
+#discover_users.execute(DB_NAME)
+#discover_linux.execute(DB_NAME)
 #discover_windows.execute(DB_NAME, user, password)
+discover_labs.execute(DB_NAME);
 
-test();
+#test();
