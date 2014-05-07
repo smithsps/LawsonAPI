@@ -13,33 +13,33 @@ DB_NAME = "discover.db"
 def build_db():
 		if (not os.path.isfile(DB_NAME)):
 			print "Building new SQLite database."
-		  connection = sqlite.connect(DB_NAME)
-		  c = connection.cursor()
-		  
-		  #name, lab, room, useable, user
-		  c.execute('''CREATE TABLE computers (
-		      				name TEXT PRIMARY KEY, 
-		      				lab TEXT,
-		      				room TEXT,
-		      				os TEXT,
-		      				useable INTEGER,
-		      				error INTEGER,
-		      				user TEXT)''')
-		  
-		  #username, name
-		  c.execute('''CREATE TABLE users (
-		      				username TEXT PRIMARY KEY,
-		      				name TEXT)''')
-		      				
-		  c.execute('''CREATE TABLE labs (
-		      				name TEXT PRIMARY KEY,
-		      				class INTEGER,
-		      				classTime TEXT,
-		      				className TEXT,
-		      				status TEXT)''')
-		      				
-		  connection.commit();
-		  connection.close();
+			connection = sqlite.connect(DB_NAME)
+			c = connection.cursor()
+
+			#name, lab, room, useable, user
+			c.execute('''CREATE TABLE computers (
+									name TEXT PRIMARY KEY, 
+									lab TEXT,
+									room TEXT,
+									os TEXT,
+									useable INTEGER,
+									error INTEGER,
+									user TEXT)''')
+
+			#username, name
+			c.execute('''CREATE TABLE users (
+									username TEXT PRIMARY KEY,
+									name TEXT)''')
+								
+			c.execute('''CREATE TABLE labs (
+									name TEXT PRIMARY KEY,
+									class INTEGER,
+									classTime TEXT,
+									className TEXT,
+									status TEXT)''')
+								
+			connection.commit();
+			connection.close();
 
 
 def print_db():
@@ -57,30 +57,20 @@ def print_db():
 
 
 def test():
-	connection = sqlite.connect(DB_NAME)
-	c = connection.cursor()
-	c.execute("INSERT OR REPLACE INTO computers VALUES ('tst01', 'SAC', 'B134', 'BOSTON', 1, 1, 'smithsp')")
-	connection.commit()
-	connection.close()
 	
 	print_db()
 	
 	connection = sqlite.connect(DB_NAME)
 	c = connection.cursor()
-	c.execute("DELETE FROM computers WHERE name='tst01'")
-	connection.commit()
-	connection.close()
-	
-	connection = sqlite.connect(DB_NAME)
-	c = connection.cursor()
-	c.execute("SELECT * FROM computers WHERE user='smithsp'")
+	c.execute("SELECT * FROM computers WHERE user='msandy'")
 	print c.fetchone()
 
-user = getpass.getuser() 
-password = getpass.getpass("Enter password for " + user + " (USED FOR WINDOWS COMPUTERS):")
+#user = getpass.getuser() 
+#password = getpass.getpass("Enter password for " + user + " (USED FOR WINDOWS COMPUTERS):")
 
 build_db();
 discover_users.execute(DB_NAME)
 discover_linux.execute(DB_NAME)
+#discover_windows.execute(DB_NAME, user, password)
 
 test();
