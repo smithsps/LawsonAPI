@@ -2,6 +2,7 @@ import subprocess
 import sqlite3 as sqlite
 import logging
 import os.path
+import time
 import getpass
 import discover_linux
 import discover_windows
@@ -70,13 +71,16 @@ def test():
 	c.execute("SELECT * FROM computers WHERE user='smithsp'")
 	print c.fetchone()
 
+def run():
+	discover_users.execute(DB_NAME)
+	discover_linux.execute(DB_NAME)
+	discover_labs.execute(DB_NAME);
+
 #user = getpass.getuser() 
 #password = getpass.getpass("Enter password for " + user + " (USED FOR WINDOWS COMPUTERS):")
-
-build_db();
-discover_users.execute(DB_NAME)
-discover_linux.execute(DB_NAME)
-#discover_windows.execute(DB_NAME, user, password)
-discover_labs.execute(DB_NAME);
+build_db()
+while True:
+	run()
+	time.sleep(60)
 
 #test();

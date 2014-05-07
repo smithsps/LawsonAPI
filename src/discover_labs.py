@@ -37,14 +37,13 @@ def build_lablist():
 			 Lab("MOORE", "1r5tgrb2sln4oe4h4f4gfeece8@group.calendar.google.com"),
 			 Lab("POD", "hd9ldosmo9upm7u5scvq8uumig@group.calendar.google.com"),
 			 Lab("SSLAB", "25m91hh3dpdlcguv5h30i749pg@group.calendar.google.com"),
-			 Lab("K9", "bvh903t70gtpvgtl6m8vhl2e1s@group.calendar.google.com"),
 			 Lab("BORG", "jv11mjte5oupheck2kmv36mn2o@group.calendar.google.com"),
 			 Lab("XINU", "tg56f4t31msvg4o56iuf37luqk@group.calendar.google.com")]
-			 
+			 # Lab("K9", "bvh903t70gtpvgtl6m8vhl2e1s@group.calendar.google.com")
 
 
 def build():
-	now = datetime.now()+timedelta(0.4, 0)
+	now = datetime.now()
 	google_max = build_google_time(now)
 	slightlybeforenow = now - timedelta(0,1)
 	google_min = build_google_time(slightlybeforenow);
