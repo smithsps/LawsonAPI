@@ -51,8 +51,12 @@ def print_db():
 		print row
 		
 	#print "\nUsernames:"
-	#for row in c.execute("SELECT * FROM translation"):
+	#for row in c.execute("SELECT * FROM users"):
 		#print row
+		
+	print "\nLabs:"
+	for row in c.execute("SELECT * FROM labs"):
+		print row
 	
 	connection.close();
 
@@ -75,4 +79,4 @@ build_db();
 #discover_windows.execute(DB_NAME, user, password)
 discover_labs.execute(DB_NAME);
 
-#test();
+test();

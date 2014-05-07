@@ -20,7 +20,7 @@ class Lab:
 	name = ""
 	calendar_id = ""
 	
-	inuse = False
+	event = False
 	eventTime = ""
 	eventName = ""
 	
@@ -53,26 +53,44 @@ def build():
 							 'timeMax' : google_max, 'timeMin' : google_min, 'key' : calendar_key} 
 	
 	for lab in labs:
-		
 		r = requests.get(calendar_default_url + lab.calendar_id + "/events", params=payload)
-		print r.url
-		print r.status_code
 
 		json = r.json()
 		for item in json["items"]:
 			lab.eventName = item["summary"]
 			lab.eventStart = item["start"]
 			lab.eventEnd = item["end"]
-			lab.inuse = True
-			lab.statu = "Class In Session"
+			lab.event = True
+			lab.status = "Class In Session"
 			
-		if (not lab.inuse):
-			if (now.hour in range(2, 5.5)):
+		if (not lab.event):
+			if (now.hour in range(2, 6)):
 				lab.status = "Room Locked"
 	
 	
+	lookup = []
+	for lab in labs:
+		#Some date phrasing
+		if lab.event:
+			start = lab.eventStart["dateTime"].split("T")[1].split("-")[0]
+			end = lab.eventEnd["dateTime"].split("T")[1].split("-")[0]
+			lab.eventTime = start + " - " + end
+			print lab.eventTime
+			
+		lookup.append((lab.name, int(lab.event), lab.eventTime, lab.eventName, lab.status))
+	
+	return lookup
+	
 def execute(db_name):
-	build()
+	lookup = build()
+	
+	connection = sqlite.connect(db_name)
+	c = connection.cursor()
+	
+	c.executemany("INSERT OR REPLACE INTO labs VALUES (?,?,?,?,?)", lookup);
+	
+	connection.commit()
+	connection.close()
 	
 	
 labs = build_lablist()
