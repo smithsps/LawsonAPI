@@ -35,6 +35,7 @@ def build_db():
 								
 			c.execute('''CREATE TABLE labs (
 									name TEXT PRIMARY KEY,
+									room TEXT,
 									event INTEGER,
 									eventTime TEXT,
 									eventName TEXT,

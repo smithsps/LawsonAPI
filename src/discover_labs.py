@@ -18,6 +18,7 @@ def build_google_time(dt):
 
 class Lab:
 	name = ""
+	room = ""
 	calendar_id = ""
 	
 	event = False
@@ -28,17 +29,18 @@ class Lab:
 	eventEnd = ""
 	
 	status = ""
-	def __init__(self, name, calendar_id):
+	def __init__(self, name, room, calendar_id):
 		self.name = name
+		self.room = room
 		self.calendar_id = calendar_id
 
 def build_lablist():
-	return [Lab("SAC", "isp5jp397bj8et0i5r8g6kd3uo@group.calendar.google.com"),
-			 Lab("MOORE", "1r5tgrb2sln4oe4h4f4gfeece8@group.calendar.google.com"),
-			 Lab("POD", "hd9ldosmo9upm7u5scvq8uumig@group.calendar.google.com"),
-			 Lab("SSLAB", "25m91hh3dpdlcguv5h30i749pg@group.calendar.google.com"),
-			 Lab("BORG", "jv11mjte5oupheck2kmv36mn2o@group.calendar.google.com"),
-			 Lab("XINU", "tg56f4t31msvg4o56iuf37luqk@group.calendar.google.com")]
+	return [Lab("SAC", "LWSN B131", "isp5jp397bj8et0i5r8g6kd3uo@group.calendar.google.com"),
+			 Lab("MOORE", "LWSN B146", "1r5tgrb2sln4oe4h4f4gfeece8@group.calendar.google.com"),
+			 Lab("POD", "LWSN B148", "hd9ldosmo9upm7u5scvq8uumig@group.calendar.google.com"),
+			 Lab("SSLAB", "LWSN B158", "25m91hh3dpdlcguv5h30i749pg@group.calendar.google.com"),
+			 Lab("BORG", "HAAS G40", "jv11mjte5oupheck2kmv36mn2o@group.calendar.google.com"),
+			 Lab("XINU", "HAAS 257", "tg56f4t31msvg4o56iuf37luqk@group.calendar.google.com")]
 			 # Lab("K9", "bvh903t70gtpvgtl6m8vhl2e1s@group.calendar.google.com")
 
 
@@ -75,7 +77,7 @@ def build():
 			end = lab.eventEnd["dateTime"].split("T")[1].split("-")[0]
 			lab.eventTime = start + " - " + end
 			
-		lookup.append((lab.name, int(lab.event), lab.eventTime, lab.eventName, lab.status))
+		lookup.append((lab.name, lab.room, int(lab.event), lab.eventTime, lab.eventName, lab.status))
 	
 	return lookup
 	
@@ -85,7 +87,7 @@ def execute(db_name):
 	connection = sqlite.connect(db_name)
 	c = connection.cursor()
 	
-	c.executemany("INSERT OR REPLACE INTO labs VALUES (?,?,?,?,?)", lookup);
+	c.executemany("INSERT OR REPLACE INTO labs VALUES (?,?,?,?,?,?)", lookup);
 	
 	connection.commit()
 	connection.close()
