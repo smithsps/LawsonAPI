@@ -21,8 +21,9 @@ def labs():
 	labs = c.fetchall()
 	for row in labs:
 		build = {"name" : row[0]}
-		build["event"] = { "ongoing" : row[1], "time" : row[2], "name" : row[3] }
-		build["status"] = row[4]
+		build["room"] = row[1]
+		build["event"] = { "ongoing" : row[2], "time" : row[3], "name" : row[4] }
+		build["status"] = row[5]
 		total = 0
 		inuse = 0
 		for crow in c.execute("SELECT * FROM computers WHERE lab='" + build["name"] +"'"):
@@ -52,4 +53,4 @@ def labcomputers(name):
 def index():
 	return static_file("index.html", root="www/")
 	
-run(app, host='localhost', port=8000, debug=True)
+run(app, host='moore03.cs.purdue.edu', port=8000, debug=True)
