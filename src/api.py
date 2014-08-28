@@ -17,7 +17,7 @@ def labs():
 	connection = sqlite.connect(DB_NAME)
 	c = connection.cursor()
 	
-	c.execute("SELECT * FROM labs")
+	c.execute("SELECT * FROM labs ORDER BY name")
 	labs = c.fetchall()
 	for row in labs:
 		build = {"name" : row[0]}
@@ -53,4 +53,4 @@ def labcomputers(name):
 def index():
 	return static_file("index.html", root="www/")
 	
-run(app, host='moore03.cs.purdue.edu', port=8000, debug=True)
+run(app, host='sslab13.cs.purdue.edu', port=8000, debug=True)

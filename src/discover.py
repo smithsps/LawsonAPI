@@ -3,6 +3,7 @@ import sqlite3 as sqlite
 import logging
 import os.path
 import time
+from datetime import datetime
 import getpass
 import discover_linux
 import discover_windows
@@ -49,39 +50,32 @@ def print_db():
 	connection = sqlite.connect(DB_NAME)
 	c = connection.cursor()
 	print "Computers:"
-	for row in c.execute("SELECT * FROM computers ORDER BY name"):
+	for row in c.execute("SELECT * FROM computers WHERE lab='SAC' ORDER BY name"):
 		print row
 		
-	print "\nUsernames:"
-	for row in c.execute("SELECT * FROM users ORDER BY name"):
-		print row
+	#print "\nUsernames:"
+	#for row in c.execute("SELECT * FROM users ORDER BY name"):
+	#	print row
 		
-	print "\nLabs:"
-	for row in c.execute("SELECT * FROM labs"):
-		print row
+	#print "\nLabs:"
+	#for row in c.execute("SELECT * FROM labs"):
+	#	print row
 	
 	connection.close();
 
 
 def test():
-	
-	print_db()
-	
-	connection = sqlite.connect(DB_NAME)
-	c = connection.cursor()
-	c.execute("SELECT * FROM computers WHERE user='smithsp'")
-	print c.fetchone()
+	print_db()	
 
 def run():
-	discover_users.execute(DB_NAME)
-	discover_linux.execute(DB_NAME)
-	discover_labs.execute(DB_NAME);
+  print "Running Query at " + str(datetime.now())
+  discover_users.execute(DB_NAME)
+  discover_linux.execute(DB_NAME)
+  discover_labs.execute(DB_NAME);
 
 #user = getpass.getuser() 
 #password = getpass.getpass("Enter password for " + user + " (USED FOR WINDOWS COMPUTERS):")
 build_db()
 while True:
 	run()
-	time.sleep(60)
-
-#test();
+	time.sleep(300)
