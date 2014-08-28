@@ -37,7 +37,7 @@ def start_subprocess(host):
 	
 
 def build():
-	notStarted = computer_names;
+	notStarted = list(computer_names)
 	processes = []
 	failed = []
 	completed = []
